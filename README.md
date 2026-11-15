@@ -29,12 +29,6 @@ O projeto simula um cofre com mecanismo de segurança em que o jogador precisa d
 - `images/` — imagens do cofre e elementos visuais
 - `sounds/` — efeitos sonoros e música de fundo
 
-## Como executar
-
-1. Abra a pasta do projeto no navegador.
-2. Clique no arquivo `index.html`.
-3. Inicie o jogo e descubra a combinação.
-
 ## Como jogar
 
 1. Clique em "INICIAR OPERAÇÃO".
