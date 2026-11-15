@@ -7,7 +7,7 @@ Jogo web interativo de adivinhação de senha em estilo de cofre, desenvolvido c
 O projeto simula um cofre com mecanismo de segurança em que o jogador precisa descobrir a combinação secreta antes que o tempo acabe ou que as tentativas se esgotem. O jogo apresenta:
 
 - tela inicial com regras do desafio
-- cronômetro de 2 minutos e 30 segundos
+- cronômetro de 1 minuto e 30 segundos
 - limite de 7 tentativas
 - dicas de maior/menor conforme a tentativa
 - roldanas animadas simulando a combinação do cofre

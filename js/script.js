@@ -19,12 +19,15 @@ let imageLoaded = false;
 
 let previousGuesses = [];
 
-const GAME_TIME = 150;
+const GAME_TIME = 90;
+const MUSIC_PLAY_AFTER_GAME = 10000;
+const MUSIC_FADE_DURATION = 2000;
 
 let timeLeft = GAME_TIME;
 let timerInterval = null;
 let gameStarted = false;
 let musicFadeInterval = null;
+let musicStopTimeout = null;
 
 // ELEMENTOS
 
@@ -75,6 +78,7 @@ startGame.onclick = () => {
     // Música de fundo
     if (backgroundMusic) {
 
+        clearTimeout(musicStopTimeout);
         clearInterval(musicFadeInterval);
 
         backgroundMusic.volume = 0.45;
@@ -146,7 +150,7 @@ function fadeMusic() {
     clearInterval(musicFadeInterval);
 
     const startingVolume = backgroundMusic.volume;
-    const duration = 2000;
+    const duration = MUSIC_FADE_DURATION;
     const steps = 40;
     const volumeStep = startingVolume / steps;
 
@@ -392,15 +396,6 @@ submit.onclick = async () => {
     position1 = newPosition1;
     position2 = newPosition2;
 
-    // Parar música e restaurar volume
-    if (backgroundMusic) {
-
-        backgroundMusic.pause();
-        backgroundMusic.currentTime = 0;
-        backgroundMusic.volume = 0.45;
-
-    }
-
     // Parar som das engrenagens
     if (gearSound) {
 
@@ -508,7 +503,11 @@ function finishGame(won, timedOut = false) {
     }
 
     // Diminuir música de fundo
-    fadeMusic();
+    clearTimeout(musicStopTimeout);
+    musicStopTimeout = setTimeout(
+        fadeMusic,
+        MUSIC_PLAY_AFTER_GAME - MUSIC_FADE_DURATION
+    );
 
     resultOverlay.classList.add("show");
 
@@ -543,6 +542,7 @@ reset.onclick = () => {
 
     clearInterval(timerInterval);
     clearInterval(musicFadeInterval);
+    clearTimeout(musicStopTimeout);
 
     gameStarted = false;
 
@@ -604,6 +604,14 @@ reset.onclick = () => {
 
         gearSound.pause();
         gearSound.currentTime = 0;
+
+    }
+
+    if (backgroundMusic) {
+
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
+        backgroundMusic.volume = 0.45;
 
     }
 
