@@ -14,6 +14,28 @@
 
     <main class="game">
 
+                <!-- TELA INICIAL -->
+        <div class="intro-screen" id="introScreen">
+            <div class="intro-content">
+                <h1>O COFRE</h1>
+                <p>SISTEMA DE SEGURANÇA ATIVADO</p>
+
+                <div class="intro-divider"></div>
+
+                <p>A combinação foi perdida.</p>
+                <p>Você tem 2 minutos e 30 segundos para descobrir o código.</p>
+                <p>Você possui apenas 7 tentativas.</p>
+
+                <button id="startGame">INICIAR OPERAÇÃO</button>
+            </div>
+        </div>
+
+        <!-- CRONÔMETRO -->
+        <div class="timer-box" id="timerBox">
+            <span>TEMPO RESTANTE</span>
+            <strong id="timer">02:30</strong>
+        </div>
+
         <div class="result-overlay" id="resultOverlay">
            <h1 id="resultTitle"></h1>
             <p id="resultMessage"></p>
@@ -77,6 +99,7 @@
     </main>
 
     <audio id="gearSound" src="sounds/engrenagem.mp3" loop></audio>
+    <audio id="backgroundMusic" src="sounds/tensao.mp3" loop></audio>
 
 </body>
 </html>

@@ -19,6 +19,13 @@ let imageLoaded = false;
 
 let previousGuesses = [];
 
+const GAME_TIME = 150;
+
+let timeLeft = GAME_TIME;
+let timerInterval = null;
+let gameStarted = false;
+let musicFadeInterval = null;
+
 // ELEMENTOS
 
 const resultOverlay = document.getElementById("resultOverlay");
@@ -45,6 +52,128 @@ const plus = document.getElementById("plus");
 const minus = document.getElementById("minus");
 
 const wheels = [wheel1, wheel2];
+
+const introScreen = document.getElementById("introScreen");
+const startGame = document.getElementById("startGame");
+
+const timer = document.getElementById("timer");
+const timerBox = document.getElementById("timerBox");
+
+const backgroundMusic = document.getElementById("backgroundMusic");
+
+// INICIAR O JOGO
+
+startGame.onclick = () => {
+
+    if (gameStarted) return;
+
+    gameStarted = true;
+
+    introScreen.classList.add("hidden");
+    timerBox.classList.add("active");
+
+    // Música de fundo
+    if (backgroundMusic) {
+
+        clearInterval(musicFadeInterval);
+
+        backgroundMusic.volume = 0.45;
+        backgroundMusic.currentTime = 0;
+
+        backgroundMusic.play().catch(() => {});
+
+    }
+
+    // Começar cronômetro
+    startTimer();
+
+};
+
+
+// CRONÔMETRO
+
+function updateTimer() {
+
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+
+    timer.textContent =
+        String(minutes).padStart(2, "0") + ":" +
+        String(seconds).padStart(2, "0");
+
+    if (timeLeft <= 30) {
+        timerBox.classList.add("urgent");
+    } else {
+        timerBox.classList.remove("urgent");
+    }
+
+}
+
+
+function startTimer() {
+
+    clearInterval(timerInterval);
+
+    updateTimer();
+
+    timerInterval = setInterval(() => {
+
+        if (finished || !gameStarted) return;
+
+        timeLeft--;
+
+        updateTimer();
+
+        if (timeLeft <= 0) {
+
+            clearInterval(timerInterval);
+
+            finishGame(false, true);
+
+        }
+
+    }, 1000);
+
+}
+
+
+// DIMINUIR MÚSICA GRADUALMENTE
+
+function fadeMusic() {
+
+    if (!backgroundMusic) return;
+
+    clearInterval(musicFadeInterval);
+
+    const startingVolume = backgroundMusic.volume;
+    const duration = 2000;
+    const steps = 40;
+    const volumeStep = startingVolume / steps;
+
+    let currentStep = 0;
+
+    musicFadeInterval = setInterval(() => {
+
+        currentStep++;
+
+        backgroundMusic.volume = Math.max(
+            0,
+            startingVolume - volumeStep * currentStep
+        );
+
+        if (currentStep >= steps) {
+
+            clearInterval(musicFadeInterval);
+
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+            backgroundMusic.volume = 0.45;
+
+        }
+
+    }, duration / steps);
+
+}
 
 // CARREGAR IMAGEM DOS NÚMEROS
 
@@ -192,7 +321,7 @@ function spinWheel(wheel, currentPosition, targetDigit) {
 
 submit.onclick = async () => {
 
-    if (spinning || finished) return;
+    if (!gameStarted || spinning || finished) return;
 
     const guess = Number(guessInput.value);
 
@@ -263,8 +392,16 @@ submit.onclick = async () => {
     position1 = newPosition1;
     position2 = newPosition2;
 
-    // PARAR SOM
+    // Parar música e restaurar volume
+    if (backgroundMusic) {
 
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
+        backgroundMusic.volume = 0.45;
+
+    }
+
+    // Parar som das engrenagens
     if (gearSound) {
 
         gearSound.pause();
@@ -348,12 +485,13 @@ function unlockControls() {
     minus.disabled = false;
 }
 
-// FINALIZAR JOGO
-
-function finishGame(won) {
+function finishGame(won, timedOut = false) {
 
     finished = true;
     spinning = false;
+    gameStarted = false;
+
+    clearInterval(timerInterval);
 
     submit.disabled = true;
     guessInput.disabled = true;
@@ -363,34 +501,56 @@ function finishGame(won) {
     submit.hidden = true;
     reset.hidden = false;
 
+    // Parar som das engrenagens
+    if (gearSound) {
+        gearSound.pause();
+        gearSound.currentTime = 0;
+    }
+
+    // Diminuir música de fundo
+    fadeMusic();
+
     resultOverlay.classList.add("show");
 
     if (won) {
 
-    game.classList.add("won");
+        game.classList.add("won");
 
-    resultTitle.textContent = "VOCÊ ACERTOU!";
-    resultMessage.textContent = "COFRE DESBLOQUEADO";
-
-    status.textContent = "";
+        resultTitle.textContent = "VOCÊ ACERTOU!";
+        resultMessage.textContent = "COFRE DESBLOQUEADO";
 
     } else {
 
         game.classList.add("lost");
 
-        resultTitle.textContent = "VOCÊ PERDEU";
-        resultMessage.textContent =
-            "A SENHA ERA " + String(secret).padStart(2, "0");
+        resultTitle.textContent = timedOut
+            ? "TEMPO ESGOTADO!"
+            : "VOCÊ PERDEU";
 
-        status.textContent = "";
+        resultMessage.textContent = timedOut
+            ? "A COMBINAÇÃO NÃO FOI DESCOBERTA"
+            : "A SENHA ERA " + String(secret).padStart(2, "0");
 
     }
+
+    status.textContent = "";
 
 }
 
 // REINICIAR
 
 reset.onclick = () => {
+
+    clearInterval(timerInterval);
+    clearInterval(musicFadeInterval);
+
+    gameStarted = false;
+
+    timeLeft = GAME_TIME;
+    updateTimer();
+
+    timerBox.classList.remove("active", "urgent");
+    introScreen.classList.remove("hidden");
 
     game.classList.remove("lost", "won");
 
