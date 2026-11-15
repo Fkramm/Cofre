@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Cofre</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
+</head>
+
+<body>
+
+    <main class="game">
+
+        <div class="result-overlay" id="resultOverlay">
+           <h1 id="resultTitle"></h1>
+            <p id="resultMessage"></p>
+        </div>
+
+        <!-- CAMADA 1: ROLDANAS -->
+        <div class="wheels">
+            <div class="wheel" id="wheel1"></div>
+            <div class="wheel" id="wheel2"></div>
+        </div>
+
+        <!-- CAMADA 2: IMAGEM DO COFRE -->
+        <img
+            src="images/bau.png"
+            class="chest"
+            alt="Cofre"
+        >
+
+        <!-- CAMADA 3: INTERFACE -->
+        <section class="panel">
+
+            <h2>COMBINAÇÃO</h2>
+            <div class="divider"></div>
+
+            <div class="number-controls">
+                <button id="minus">−</button>
+
+                <input
+                    type="number"
+                    id="guess"
+                    min="0"
+                    max="50"
+                    step="1"
+                    value="0"
+                >
+
+                <button id="plus">+</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <h2>TENTATIVAS</h2>
+            <div class="attempts" id="attempts"></div>
+
+            <div class="divider"></div>
+
+            <h2>TENTATIVAS ANTERIORES</h2>
+            <div class="history" id="history"></div>
+
+            <div class="divider"></div>
+
+            <button id="submit">SUBMIT</button>
+            <button id="reset" hidden>JOGAR NOVAMENTE</button>
+
+        </section>
+
+        <div id="status">
+            AGUARDE A RESPOSTA DO MECANISMO
+        </div>
+
+    </main>
+
+    <audio id="gearSound" src="sounds/engrenagem.mp3" loop></audio>
+
+</body>
+</html>
